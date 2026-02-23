@@ -48,14 +48,19 @@ class ExecutionIntegrityCore:
     def verify(self):
         prev = "GENESIS"
         for entry in self.chain:
-            expected = entry["hash"]
+            try:
+                expected = entry["hash"]
+                prev_hash = entry["previous_hash"]
+            except KeyError:
+                return False
+
             temp = dict(entry)
             temp.pop("hash", None)
 
             raw = json.dumps(temp, sort_keys=True).encode()
             recalculated = hashlib.sha256(raw).hexdigest()
 
-            if recalculated != expected or entry["previous_hash"] != prev:
+            if recalculated != expected or prev_hash != prev:
                 return False
 
             prev = expected
