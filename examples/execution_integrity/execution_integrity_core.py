@@ -4,6 +4,10 @@ import json
 import time
 
 
+def _serialize(obj):
+    return json.dumps(obj, sort_keys=True, default=str).encode()
+
+
 class ExecutionIntegrityCore:
     def __init__(self):
         self.chain = []
@@ -21,10 +25,7 @@ class ExecutionIntegrityCore:
             "previous_hash": self.previous_hash,
         }
 
-        try:
-            raw = json.dumps(entry, sort_keys=True).encode()
-        except (TypeError, ValueError):
-            raw = json.dumps(entry, sort_keys=True, default=str).encode()
+        raw = _serialize(entry)
         current_hash = hashlib.sha256(raw).hexdigest()
 
         entry["hash"] = current_hash
@@ -44,7 +45,7 @@ class ExecutionIntegrityCore:
         }
 
         with open(filename, "w") as f:
-            json.dump(envelope, f, indent=2, sort_keys=True)
+            json.dump(envelope, f, indent=2, sort_keys=True, default=str)
 
         return filename
 
@@ -55,7 +56,7 @@ class ExecutionIntegrityCore:
                 temp = dict(entry)
                 expected = temp.pop("hash")
 
-                raw = json.dumps(temp, sort_keys=True).encode()
+                raw = _serialize(temp)
                 recalculated = hashlib.sha256(raw).hexdigest()
 
                 if recalculated != expected or entry.get("previous_hash") != prev:
