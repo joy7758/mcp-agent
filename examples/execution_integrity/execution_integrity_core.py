@@ -15,13 +15,16 @@ class ExecutionIntegrityCore:
 
         entry = {
             "timestamp": ts,
-            "action": action,
+            "action": copy.deepcopy(action),
             "input": copy.deepcopy(input_data),
             "output": copy.deepcopy(output_data),
             "previous_hash": self.previous_hash,
         }
 
-        raw = json.dumps(entry, sort_keys=True).encode()
+        try:
+            raw = json.dumps(entry, sort_keys=True).encode()
+        except (TypeError, ValueError):
+            raw = json.dumps(entry, sort_keys=True, default=str).encode()
         current_hash = hashlib.sha256(raw).hexdigest()
 
         entry["hash"] = current_hash
@@ -49,18 +52,15 @@ class ExecutionIntegrityCore:
         prev = "GENESIS"
         for entry in self.chain:
             try:
-                expected = entry["hash"]
-                prev_hash = entry["previous_hash"]
-            except KeyError:
-                return False
+                temp = dict(entry)
+                expected = temp.pop("hash")
 
-            temp = dict(entry)
-            temp.pop("hash", None)
+                raw = json.dumps(temp, sort_keys=True).encode()
+                recalculated = hashlib.sha256(raw).hexdigest()
 
-            raw = json.dumps(temp, sort_keys=True).encode()
-            recalculated = hashlib.sha256(raw).hexdigest()
-
-            if recalculated != expected or prev_hash != prev:
+                if recalculated != expected or entry.get("previous_hash") != prev:
+                    return False
+            except (KeyError, TypeError, ValueError):
                 return False
 
             prev = expected
