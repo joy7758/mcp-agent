@@ -3,7 +3,11 @@ from verify_export import verify_export
 
 core = ExecutionIntegrityCore()
 
-core.record("tool_call", {"tool": "search", "q": "agent execution"}, {"ok": True}, ts=1700000000.0)
+first_input = {"tool": "search", "q": "agent execution"}
+core.record("tool_call", first_input, {"ok": True}, ts=1700000000.0)
+first_input["q"] = "mutated later"
+print("Verification after harmless input mutation:", core.verify())
+
 core.record("tool_call", {"tool": "calc", "expr": "2+2"}, {"result": 4}, ts=1700000001.0)
 
 print("Verification before tamper:", core.verify())

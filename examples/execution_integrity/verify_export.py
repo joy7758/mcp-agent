@@ -11,8 +11,18 @@ def sha256_of_entry_without_hash(entry):
 
 
 def verify_export(path):
-    with open(path, "r") as f:
-        data = json.load(f)
+    try:
+        with open(path, "r") as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        print("EXPORT_VERIFY: FAIL (file not found)")
+        return 2
+    except json.JSONDecodeError:
+        print("EXPORT_VERIFY: FAIL (invalid json)")
+        return 2
+    except Exception:
+        print("EXPORT_VERIFY: FAIL (unexpected error)")
+        return 2
 
     required_top = ["spec", "version", "exported_at", "hash_alg", "chain"]
     for key in required_top:
