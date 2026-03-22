@@ -1,3 +1,14 @@
+<!-- language-switch:start -->
+<p>
+  <a href="./README.md">
+    <img src="https://img.shields.io/badge/English-Current-1f883d?style=for-the-badge" alt="English">
+  </a>
+  <a href="./README.zh-CN.md">
+    <img src="https://img.shields.io/badge/Chinese-Switch-0f172a?style=for-the-badge" alt="Chinese">
+  </a>
+</p>
+<!-- language-switch:end -->
+
 <p align="center">
   <a href="https://docs.mcp-agent.com"><img src="https://github.com/user-attachments/assets/c8d059e5-bd56-4ea2-a72d-807fb4897bde" alt="Logo" width="300" /></a>
 </p>
